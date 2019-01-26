@@ -24,7 +24,7 @@ const pgClient = new Pool({
 
 pgClient.on('error', () => console.log('Lost pg connection'));
 
-pgClient.query('CREATE TABLE IF NOT EXIST values (number INT)')
+pgClient.query('CREATE TABLE IF NOT EXISTS values (number INT)')
   .catch(err => console.log(err));
 
 // Redis client
@@ -62,7 +62,7 @@ app.post('/values', async (req, res) => {
 
   redisClient.hset('values', index, 'Nothing yet!');
   redisPublusher.publish('insert', index);
-  pgClient.query('INSER INTO values(number) VALUES($1)', [index]);
+  pgClient.query('INSERT INTO values(number) VALUES($1)', [index]);
 
   res.send({
     working: true
