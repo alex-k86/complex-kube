@@ -1,0 +1,25 @@
+sudo: required
+
+services:
+  - docker
+
+before_install:
+  - docker build -t image/with-tests -f ./client/dev.dockerfile ./client
+
+script:
+  - docker run image/with-tests npm test -- --coverage
+
+after_success:
+  - docker build -t hedin504/multi-client ./client
+  - docker build -t hedin504/multi-nginx ./nginx
+  - docker build -t hedin504/multi-server ./server
+  - docker build -t hedin504/multi-worker ./worker
+# login into docker cli
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+# push to docker hub
+  - docker push hedin504/multi-client
+  - docker push hedin504/multi-nginx
+  - docker push hedin504/multi-server
+  - docker push hedin504/multi-worker
+
+
